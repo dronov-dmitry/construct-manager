@@ -1,0 +1,92 @@
+name: Release build
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: linux
+            artifact: construct-manager-linux.tar.gz
+          - os: windows-latest
+            target: windows
+            artifact: construct-manager-windows.zip
+          - os: macos-latest
+            target: macos
+            artifact: construct-manager-macos.tar.gz
+
+    defaults:
+      run:
+        working-directory: dart/construct_manager
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.x"
+          channel: "stable"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build for ${{ matrix.target }}
+        run: flutter build ${{ matrix.target }} --release
+
+      - name: Package Linux artifacts
+        if: matrix.target == 'linux'
+        run: |
+          tar -czf ${{ matrix.artifact }} -C build/linux/x64/release/bundle .
+
+      - name: Package Windows artifacts
+        if: matrix.target == 'windows'
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath ${{ matrix.artifact }}
+
+      - name: Package macOS artifacts
+        if: matrix.target == 'macos'
+        run: |
+          tar -czf ${{ matrix.artifact }} -C build/macos/Build/Products/Release .
+
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dart/construct_manager/${{ matrix.artifact }}
+          generate_release_notes: true
+
+  build-android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dart/construct_manager
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.x"
+          channel: "stable"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK
+        run: flutter build apk --release
+
+      - name: Upload APK to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dart/construct_manager/build/app/outputs/flutter-apk/app-release.apk
+          generate_release_notes: true

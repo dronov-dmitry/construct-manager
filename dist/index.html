@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10231f">
+    <meta name="description" content="ConstructManager landing page">
+    <title>ConstructManager</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" id="top">
+      <a class="brand" href="#top" aria-label="ConstructManager">
+        <span class="brand-mark">CM</span>
+        <span>ConstructManager</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary navigation">
+        <a href="#platform" data-i18n="nav.platform">Platform</a>
+        <a href="#workflow" data-i18n="nav.workflow">Workflow</a>
+        <a href="supabase.html" data-i18n="nav.supabase">Supabase guide</a>
+      </nav>
+
+      <div class="language-switcher" aria-label="Language selector">
+        <button type="button" class="lang-button" data-lang="en">EN</button>
+        <button type="button" class="lang-button" data-lang="de">DE</button>
+        <button type="button" class="lang-button" data-lang="ru">RU</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow" data-i18n="hero.eyebrow">Construction control for field teams</p>
+          <h1 data-i18n="hero.title">Run every construction project from one operational cockpit.</h1>
+          <p class="hero-text" data-i18n="hero.text">
+            ConstructManager brings budgets, deadlines, responsibilities, photos, maps and Supabase-backed access into one mobile-first workspace for contractors, customers and executors.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#platform" data-i18n="hero.primary">Explore features</a>
+            <a class="button secondary" href="supabase.html" data-i18n="hero.secondary">Deploy database</a>
+          </div>
+          <dl class="proof-grid" aria-label="Product proof points">
+            <div>
+              <dt>7</dt>
+              <dd data-i18n="proof.modules">core project modules</dd>
+            </div>
+            <div>
+              <dt>RLS</dt>
+              <dd data-i18n="proof.security">owner-based data policies</dd>
+            </div>
+            <div>
+              <dt>Mobile</dt>
+              <dd data-i18n="proof.mobile">Flutter-first workflow</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="hero-visual" aria-label="ConstructManager product preview">
+          <div class="phone-shell">
+            <div class="phone-status">
+              <span>09:41</span>
+              <span></span>
+            </div>
+            <div class="app-topbar">
+              <span data-i18n="mock.projects">My Projects</span>
+              <span class="icon-dot">+</span>
+            </div>
+            <div class="stage-tabs">
+              <span class="active" data-i18n="mock.stage1">In progress</span>
+              <span data-i18n="mock.stage2">Prep</span>
+              <span data-i18n="mock.stage3">Done</span>
+            </div>
+            <article class="project-card">
+              <div class="project-card-head">
+                <div>
+                  <p data-i18n="mock.projectType">Residential complex</p>
+                  <h2 data-i18n="mock.projectName">North Gate A12</h2>
+                </div>
+                <span data-i18n="mock.badge">On site</span>
+              </div>
+              <div class="metric-row">
+                <div>
+                  <strong>$428k</strong>
+                  <small data-i18n="mock.budget">Budget</small>
+                </div>
+                <div>
+                  <strong>18 Jun</strong>
+                  <small data-i18n="mock.deadline">Deadline</small>
+                </div>
+              </div>
+              <div class="progress-block">
+                <span data-i18n="mock.schedule">Schedule health</span>
+                <div class="progress-track"><span></span></div>
+              </div>
+            </article>
+            <div class="mobile-list">
+              <span><b></b><em data-i18n="features.budget.title">Budget control</em></span>
+              <span><b></b><em data-i18n="features.schedule.title">Schedule and delays</em></span>
+              <span><b></b><em data-i18n="features.photos.title">Photo evidence</em></span>
+            </div>
+          </div>
+
+          <div class="ops-panel">
+            <div class="ops-header">
+              <span data-i18n="ops.title">Live project desk</span>
+              <strong>84%</strong>
+            </div>
+            <div class="ops-chart" aria-hidden="true">
+              <span style="height: 42%"></span>
+              <span style="height: 67%"></span>
+              <span style="height: 54%"></span>
+              <span style="height: 78%"></span>
+              <span style="height: 61%"></span>
+              <span style="height: 88%"></span>
+            </div>
+            <ul class="ops-events">
+              <li><span></span><p data-i18n="ops.event1">Critical delay marked compensable</p></li>
+              <li><span></span><p data-i18n="ops.event2">New roof progress photo uploaded</p></li>
+              <li><span></span><p data-i18n="ops.event3">Budget total recalculated by trigger</p></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="platform">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="platform.eyebrow">What the app covers</p>
+          <h2 data-i18n="platform.title">A complete field-to-office loop.</h2>
+          <p data-i18n="platform.text">Every module maps to a real workflow already present in the Flutter app.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-icon">01</span>
+            <h3 data-i18n="features.projects.title">Project portfolio</h3>
+            <p data-i18n="features.projects.text">Create construction objects, store addresses, types, responsible people and stage statuses from preparation to completion.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon">02</span>
+            <h3 data-i18n="features.budget.title">Budget control</h3>
+            <p data-i18n="features.budget.text">Track budget items, descriptions and values while database triggers keep project totals consistent.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon">03</span>
+            <h3 data-i18n="features.schedule.title">Schedule and delays</h3>
+            <p data-i18n="features.schedule.text">Manage deadlines, solved states and delay claims with flags for excusable, compensable, concurrent and critical cases.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon">04</span>
+            <h3 data-i18n="features.responsibility.title">Responsibility matrix</h3>
+            <p data-i18n="features.responsibility.text">Assign tasks to responsible emails, track open or solved status and keep accountability visible.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon">05</span>
+            <h3 data-i18n="features.photos.title">Photo evidence</h3>
+            <p data-i18n="features.photos.text">Upload site photos to Supabase Storage, add descriptions and review visual progress from a compact gallery.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon">06</span>
+            <h3 data-i18n="features.map.title">Map context</h3>
+            <p data-i18n="features.map.text">Save map addresses and view project location context with OpenStreetMap-based map screens.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section workflow-section" id="workflow">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="workflow.eyebrow">Designed for adoption</p>
+          <h2 data-i18n="workflow.title">A workflow your site team can actually keep updated.</h2>
+        </div>
+
+        <div class="workflow-grid">
+          <article>
+            <span>1</span>
+            <h3 data-i18n="workflow.step1.title">Connect Supabase</h3>
+            <p data-i18n="workflow.step1.text">Paste Project URL and anon key in app settings. Authentication and storage are ready for the team.</p>
+          </article>
+          <article>
+            <span>2</span>
+            <h3 data-i18n="workflow.step2.title">Create the project</h3>
+            <p data-i18n="workflow.step2.text">Add title, address, type, stage, owner and responsible people. Then open the object workspace.</p>
+          </article>
+          <article>
+            <span>3</span>
+            <h3 data-i18n="workflow.step3.title">Run daily control</h3>
+            <p data-i18n="workflow.step3.text">Update budget, schedule, responsibility, delays, photos and map notes from the same project view.</p>
+          </article>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <span>ConstructManager</span>
+      <div>
+        <a href="supabase.html" data-i18n="footer.supabase">Supabase guide</a>
+        <span aria-hidden="true" style="margin:0 12px;color:var(--muted)">·</span>
+        <a href="#top" data-i18n="footer.back">Back to top</a>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

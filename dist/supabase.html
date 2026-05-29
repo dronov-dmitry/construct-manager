@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#10231f">
+    <meta name="description" content="ConstructManager Supabase deployment guide">
+    <title>ConstructManager — Supabase guide</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" id="top">
+      <a class="brand" href="index.html" aria-label="ConstructManager">
+        <span class="brand-mark">CM</span>
+        <span>ConstructManager</span>
+      </a>
+
+      <nav class="main-nav" aria-label="Primary navigation">
+        <a href="index.html#platform" data-i18n="nav.platform">Platform</a>
+        <a href="index.html#workflow" data-i18n="nav.workflow">Workflow</a>
+        <a href="supabase.html" data-i18n="nav.supabase">Supabase guide</a>
+      </nav>
+
+      <div class="language-switcher" aria-label="Language selector">
+        <button type="button" class="lang-button" data-lang="en">EN</button>
+        <button type="button" class="lang-button" data-lang="de">DE</button>
+        <button type="button" class="lang-button" data-lang="ru">RU</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="section supabase-section" id="supabase">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="supabase.eyebrow">Deployment tab</p>
+          <h2 data-i18n="supabase.title">Supabase database deployment guide.</h2>
+          <p data-i18n="supabase.text">Follow this checklist to deploy tables, policies, triggers, storage and test data for ConstructManager.</p>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Supabase deployment guide">
+          <button type="button" class="tab active" role="tab" aria-selected="true" aria-controls="tab-dashboard" data-tab="dashboard" data-i18n="tabs.dashboard">Dashboard</button>
+          <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="tab-sql" data-tab="sql" data-i18n="tabs.sql">SQL files</button>
+          <button type="button" class="tab" role="tab" aria-selected="false" aria-controls="tab-verify" data-tab="verify" data-i18n="tabs.verify">Verify</button>
+        </div>
+
+        <div class="tab-panel active" id="tab-dashboard" role="tabpanel">
+          <ol class="deployment-list">
+            <li>
+              <h3 data-i18n="deploy.create.title">Create a Supabase project</h3>
+              <p data-i18n="deploy.create.text">Open Supabase, choose New project, set a strong database password and select the closest region.</p>
+            </li>
+            <li>
+              <h3 data-i18n="deploy.sql.title">Deploy database schema</h3>
+              <p data-i18n="deploy.sql.text">Go to the SQL files tab, open deploy.sql, copy the entire content and run it in Supabase SQL Editor. This creates all tables, security policies, storage rules and triggers.</p>
+            </li>
+            <li>
+              <h3 data-i18n="deploy.auth.title">Enable Email authentication</h3>
+              <p data-i18n="deploy.auth.text">Go to Authentication → Providers and enable Email. Add Site URL and Redirect URLs if OAuth is used.</p>
+            </li>
+            <li>
+              <h3 data-i18n="deploy.keys.title">Copy API credentials</h3>
+              <p data-i18n="deploy.keys.text">In Settings → API copy Project URL and anon public key. Paste them in the ConstructManager settings screen.</p>
+            </li>
+          </ol>
+        </div>
+
+        <div class="tab-panel" id="tab-sql" role="tabpanel" hidden>
+          <div class="sql-layout">
+            <div>
+              <h3 data-i18n="sql.recommended.title">Recommended: deploy all at once</h3>
+              <p data-i18n="sql.recommended.text">This single file contains the complete database. Open Supabase SQL Editor, create a new query, paste the entire content below and press Run.</p>
+              <ul class="file-list">
+                <li>
+                  <button type="button" class="file-item" data-sql-file="database/deploy.sql">
+                    <strong>database/deploy.sql</strong>
+                    <span data-i18n="sql.deploy">schema + RLS + storage + functions</span>
+                  </button>
+                  <pre class="sql-content" hidden><code></code></pre>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="tab-panel" id="tab-verify" role="tabpanel" hidden>
+          <div class="verify-grid">
+            <article>
+              <h3 data-i18n="verify.storage.title">Storage bucket</h3>
+              <p data-i18n="verify.storage.text">Confirm that the public bucket construction-photos exists in Storage.</p>
+              <pre><code>INSERT INTO storage.buckets (id, name, public)
+VALUES ('construction-photos', 'construction-photos', true);</code></pre>
+            </article>
+            <article>
+              <h3 data-i18n="verify.realtime.title">Optional realtime</h3>
+              <p data-i18n="verify.realtime.text">Enable realtime for constructions, budgets and schedules if live synchronization is required.</p>
+              <pre><code>alter publication supabase_realtime add table constructions;
+alter publication supabase_realtime add table budgets;
+alter publication supabase_realtime add table schedules;</code></pre>
+            </article>
+            <article>
+              <h3 data-i18n="verify.query.title">Run verification queries</h3>
+              <pre><code>SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public';
+
+SELECT trigger_name, event_object_table
+FROM information_schema.triggers
+WHERE trigger_schema = 'public';</code></pre>
+            </article>
+            <article>
+              <h3 data-i18n="verify.trouble.title">Troubleshooting</h3>
+              <ul class="file-list">
+                <li><strong>relation already exists</strong><span data-i18n="verify.trouble1">The script was already executed; continue if the schema is correct.</span></li>
+                <li><strong>RLS blocks requests</strong><span data-i18n="verify.trouble2">Check that 002-rls.sql ran and the current user owns the project rows.</span></li>
+                <li><strong>Seed has no users</strong><span data-i18n="verify.trouble3">Create matching auth.users first or skip 005-seed.sql in production.</span></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>ConstructManager</span>
+      <div>
+        <a href="index.html" data-i18n="footer.home">Home</a>
+        <span aria-hidden="true" style="margin:0 12px;color:var(--muted)">·</span>
+        <a href="#top" data-i18n="footer.back">Back to top</a>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

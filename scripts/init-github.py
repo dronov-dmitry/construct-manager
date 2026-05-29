@@ -137,7 +137,7 @@ def main() -> None:
 
     if status or not has_commits:
         log("Creating initial commit...", Colors.CYAN)
-        for folder in ["dart", "database", "dist", ".github"]:
+        for folder in ["dart", "database", "dist", ".github", "README.md"]:
             run_git(["add", folder], root)
         if has_commits:
             run_git(["commit", "-m", "chore: initial project commit"], root)

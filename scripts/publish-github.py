@@ -158,7 +158,7 @@ def main() -> None:
     # 3. Commit everything
     branch = args.branch or detect_current_branch()
     log(f"Committing on branch '{branch}'...", Colors.CYAN)
-    for folder in ["dart", "database", "dist", ".github"]:
+    for folder in ["dart", "database", "dist", ".github", "README.md"]:
         run_git(["add", folder], root)
     status = run_git(["status", "--porcelain"], root).stdout.strip()
 

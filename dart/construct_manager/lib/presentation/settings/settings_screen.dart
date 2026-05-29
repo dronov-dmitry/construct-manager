@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/constants.dart';
 import '../../core/network/supabase_client.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/app_update.dart';
 
 
 class SettingsScreen extends StatefulWidget {
@@ -24,6 +25,89 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _loadSettings();
+  }
+
+  Future<void> _checkForUpdatesManually() async {
+    final version = await AppUpdate.getCurrentVersion();
+    final updater = AppUpdate(currentVersion: version);
+    final info = await updater.checkForUpdate();
+
+    if (!mounted) return;
+
+    if (info == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('У вас актуальная версия v$version')),
+      );
+      return;
+    }
+
+    _showUpdateDialog(updater, info);
+  }
+
+  void _showUpdateDialog(AppUpdate updater, UpdateInfo info) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text('Доступно обновление v${info.version}'),
+        content: Text(
+          'Текущая: v${updater.currentVersion}\n'
+          'Новая: v${info.version}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: const Text('Позже'),
+          ),
+          if (info.canAutoUpdate)
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                _downloadAndInstall(updater, info);
+              },
+              icon: const Icon(Icons.download),
+              label: const Text('Скачать'),
+            ),
+          if (!info.canAutoUpdate)
+            FilledButton.icon(
+              onPressed: () async {
+                Navigator.of(ctx).pop();
+                final uri = Uri.parse(info.releaseUrl);
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              },
+              icon: const Icon(Icons.open_in_new),
+              label: const Text('Открыть релиз'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _downloadAndInstall(AppUpdate updater, UpdateInfo info) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final path = await updater.downloadAsset(info);
+    if (!mounted) return;
+    Navigator.of(context).pop();
+
+    if (path == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Ошибка скачивания')),
+      );
+      return;
+    }
+
+    final installed = await updater.installAsset(path);
+    if (!mounted) return;
+    if (!installed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Не удалось открыть файл. Скачано в: $path')),
+      );
+    }
   }
 
   Future<void> _loadSettings() async {
@@ -171,6 +255,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ],
               ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.system_update),
+              title: const Text('Проверить обновления'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: _checkForUpdatesManually,
             ),
           ),
           const SizedBox(height: 8),

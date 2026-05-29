@@ -79,6 +79,9 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
+# Local scripts (not deployed)
+scripts/
+
 # CI / build artifacts
 *.pyc
 .dart_tool

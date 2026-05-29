@@ -251,8 +251,93 @@ const translations = {
     "verify.trouble2": "Проверьте, что 002-rls.sql выполнен и текущий пользователь владеет строками проекта.",
     "verify.trouble3": "Сначала создайте соответствующих auth.users или не запускайте 005-seed.sql в production.",
     "footer.supabase": "Инструкция Supabase",
-    "footer.home": "Главная",
-    "footer.back": "Наверх"
+    "footer.home": "Головна",
+    "footer.back": "Вгору"
+  },
+  uk: {
+    "nav.platform": "Платформа",
+    "nav.workflow": "Процес",
+    "nav.supabase": "Інструкція Supabase",
+    "hero.eyebrow": "Контроль будівництва для польових команд",
+    "hero.title": "Керуйте кожним будівельним проєктом з єдиного оперативного штабу.",
+    "hero.text": "ConstructManager об'єднує бюджети, терміни, відповідальність, фото, карти та доступ через Supabase в мобільному робочому просторі для підрядників, замовників та виконавців.",
+    "hero.primary": "Переглянути функції",
+    "hero.secondary": "Розгорнути базу",
+    "proof.modules": "ключових модулів проєкту",
+    "proof.security": "політики доступу за власником",
+    "proof.mobile": "Flutter-first робочий процес",
+    "mock.projects": "Мої проєкти",
+    "mock.stage1": "У виконанні",
+    "mock.stage2": "Підготовка",
+    "mock.stage3": "Готово",
+    "mock.projectType": "Житловий комплекс",
+    "mock.projectName": "North Gate A12",
+    "mock.badge": "На об'єкті",
+    "mock.budget": "Бюджет",
+    "mock.deadline": "Термін",
+    "mock.schedule": "Стан графіка",
+    "ops.title": "Жива панель проєкту",
+    "ops.event1": "Критична затримка позначена як компенсована",
+    "ops.event2": "Завантажено нове фото прогресу покрівлі",
+    "ops.event3": "Сума бюджету перерахована тригером",
+    "platform.eyebrow": "Що охоплює застосунок",
+    "platform.title": "Повний контур від будмайданчика до офісу.",
+    "platform.text": "Кожен модуль відповідає реальному робочому процесу, який уже присутній у Flutter-застосунку.",
+    "features.projects.title": "Портфель проєктів",
+    "features.projects.text": "Створюйте будівельні об'єкти, зберігайте адреси, типи, відповідальних осіб та статуси етапів від підготовки до завершення.",
+    "features.budget.title": "Контроль бюджету",
+    "features.budget.text": "Ведіть статті бюджету, описи та суми, а тригери бази даних підтримуватимуть підсумок проєкту актуальним.",
+    "features.schedule.title": "Графік та затримки",
+    "features.schedule.text": "Керуйте термінами, виконанням та затримками з ознаками поважності, компенсації, збігу та критичності.",
+    "features.responsibility.title": "Матриця відповідальності",
+    "features.responsibility.text": "Призначайте завдання на email відповідальних, відстежуйте відкритий або вирішений статус та тримайте зони відповідальності на виду.",
+    "features.photos.title": "Фотофіксація",
+    "features.photos.text": "Завантажуйте фото об'єкта в Supabase Storage, додавайте описи та переглядайте прогрес у компактній галереї.",
+    "features.map.title": "Контекст на карті",
+    "features.map.text": "Зберігайте адреси на карті та дивіться контекст розташування об'єкта на екранах з OpenStreetMap.",
+    "workflow.eyebrow": "Створено для впровадження",
+    "workflow.title": "Процес, який команда на об'єкті дійсно зможе підтримувати.",
+    "workflow.step1.title": "Підключіть Supabase",
+    "workflow.step1.text": "Вставте Project URL та anon key у налаштуваннях застосунку. Авторизація та сховище будуть готові для команди.",
+    "workflow.step2.title": "Створіть проєкт",
+    "workflow.step2.text": "Додайте назву, адресу, тип, етап, власника та відповідальних. Потім відкрийте робочий простір об'єкта.",
+    "workflow.step3.title": "Ведіть щоденний контроль",
+    "workflow.step3.text": "Оновлюйте бюджет, графік, відповідальність, затримки, фото та нотатки карти з одного екрана проєкту.",
+    "supabase.eyebrow": "Підвкладка розгортання",
+    "supabase.title": "Інструкція з розгортання бази Supabase.",
+    "supabase.text": "Дотримуйтеся чеклиста, щоб розгорнути таблиці, політики, тригери, сховище та тестові дані для ConstructManager.",
+    "tabs.dashboard": "Dashboard",
+    "tabs.sql": "SQL-файли",
+    "tabs.verify": "Перевірка",
+    "deploy.create.title": "Створіть проєкт Supabase",
+    "deploy.create.text": "Відкрийте Supabase, виберіть New project, задайте надійний пароль бази даних та найближчий регіон.",
+    "deploy.sql.title": "Розгорніть схему бази даних",
+    "deploy.sql.text": "Перейдіть на вкладку SQL files, відкрийте deploy.sql, скопіюйте весь вміст та виконайте в Supabase SQL Editor. Це створить усі таблиці, політики безпеки, правила сховища та тригери.",
+    "deploy.auth.title": "Увімкніть Email-автентифікацію",
+    "deploy.auth.text": "Перейдіть в Authentication → Providers та увімкніть Email. Додайте Site URL та Redirect URLs, якщо використовується OAuth.",
+    "deploy.keys.title": "Скопіюйте API-ключі",
+    "deploy.keys.text": "У Settings → API скопіюйте Project URL та anon public key. Вставте їх в екран налаштувань ConstructManager.",
+    "sql.recommended.title": "Рекомендується: розгорнути все одразу",
+    "sql.recommended.text": "Цей один файл містить всю базу даних. Відкрийте Supabase SQL Editor, створіть новий запит, вставте весь вміст нижче та натисніть Run.",
+    "sql.manual.title": "Ручний порядок для налагодження",
+    "sql.file1": "таблиці та індекси",
+    "sql.file2": "політики Row Level Security",
+    "sql.file3": "bucket для фото та політики",
+    "sql.file4": "тригери та допоміжні функції",
+    "sql.file5": "опціональні демодані",
+    "sql.deploy": "схема + RLS + storage + функції",
+    "verify.storage.title": "Storage bucket",
+    "verify.storage.text": "Переконайтеся, що публічний bucket construction-photos існує в Storage.",
+    "verify.realtime.title": "Опціональний realtime",
+    "verify.realtime.text": "Увімкніть realtime для constructions, budgets та schedules, якщо потрібна жива синхронізація.",
+    "verify.query.title": "Запустіть перевірочні запити",
+    "verify.trouble.title": "Усунення проблем",
+    "verify.trouble1": "Скрипт уже виконувався; продовжуйте, якщо схема бази коректна.",
+    "verify.trouble2": "Перевірте, що 002-rls.sql виконано та поточний користувач володіє рядками проєкту.",
+    "verify.trouble3": "Спочатку створіть відповідних auth.users або не запускайте 005-seed.sql у production.",
+    "footer.supabase": "Інструкція Supabase",
+    "footer.home": "Головна",
+    "footer.back": "Вгору"
   }
 };
 
@@ -284,9 +369,11 @@ function setLanguage(language, persist = true) {
   document.documentElement.lang = activeLanguage;
   document.title = activeLanguage === "ru"
     ? "ConstructManager — управление строительством"
-    : activeLanguage === "de"
-      ? "ConstructManager — Bauprojektmanagement"
-      : "ConstructManager — construction project management";
+    : activeLanguage === "uk"
+      ? "ConstructManager — управління будівництвом"
+      : activeLanguage === "de"
+        ? "ConstructManager — Bauprojektmanagement"
+        : "ConstructManager — construction project management";
 
   languageButtons.forEach((button) => {
     const isActive = button.dataset.lang === activeLanguage;

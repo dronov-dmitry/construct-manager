@@ -744,6 +744,14 @@ pre {
     color: var(--ink);
   }
 
+  .nav-download {
+    color: var(--green) !important;
+  }
+
+  .nav-download:hover {
+    color: var(--green-dark) !important;
+  }
+
   .hero {
     grid-template-columns: minmax(0, 1fr) minmax(420px, 0.8fr);
     align-items: center;

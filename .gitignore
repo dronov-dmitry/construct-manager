@@ -79,6 +79,8 @@ Thumbs.db
 # Backup files
 *.bak
 *.backup
+# Android keystore password config
+android/key.properties
 # CI / build artifacts
 *.pyc
 .dart_tool

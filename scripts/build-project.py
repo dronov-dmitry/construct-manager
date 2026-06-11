@@ -5,12 +5,15 @@ ConstructManager — интерактивная сборка Flutter проек�
 """
 
 import re
+import shutil
 import subprocess
 import sys
 import os
+import ctypes
+from datetime import datetime
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).parent.parent / "dart" / "construct_manager"
+PROJECT_DIR = Path(__file__).parent.parent / "client" / "construct_manager"
 FLUTTER = "flutter"
 
 PLATFORMS = {
@@ -79,6 +82,13 @@ def confirm_build(platform: str, build_type: str) -> bool:
 
 
 def run_build(platform: str, build_type: str):
+    _kill_exe()
+
+    if platform == "5":
+        _fix_windows_ephemeral()
+
+    _clean_project()
+
     cmd = [
         FLUTTER,
         *PLATFORMS[platform]["cmd"],
@@ -107,7 +117,9 @@ def run_build(platform: str, build_type: str):
                         dst.unlink()
                     src.rename(dst)
                     print(f"  📦 APK: {dst}")
-            print("  ✅ Сборка успешно завершена!")
+            now = datetime.now().strftime("%H:%M:%S")
+            print(f"  ✅ Сборка успешно завершена! ({now})")
+            _launch_app(platform, build_type)
         else:
             print()
             print(f"  ❌ Сборка завершилась с ошибкой (код: {result.returncode})")
@@ -118,6 +130,69 @@ def run_build(platform: str, build_type: str):
 
     print()
     # input("  Нажмите Enter, чтобы выйти...")
+
+
+def _fix_windows_ephemeral():
+    ephemeral_cc = PROJECT_DIR / "windows" / "flutter" / "ephemeral" / "cpp_client_wrapper" / "core_implementations.cc"
+    if ephemeral_cc.exists():
+        return
+    build_cache = PROJECT_DIR / "build" / "windows" / "x64"
+    if build_cache.exists():
+        print("  🧹 Удаление устаревшего кэша сборки Windows...")
+        shutil.rmtree(str(build_cache), ignore_errors=True)
+    print("  ⚙ Синхронизация зависимостей...")
+    try:
+        subprocess.run(
+            f"{FLUTTER} pub get",
+            cwd=str(PROJECT_DIR),
+            shell=True,
+            capture_output=True,
+            check=True,
+        )
+    except Exception:
+        pass
+
+
+def _clean_project():
+    print("  🧹 Очистка кэша сборки (flutter clean)...")
+    try:
+        subprocess.run(
+            [FLUTTER, "clean"],
+            cwd=str(PROJECT_DIR),
+            shell=True,
+            capture_output=True,
+            check=True,
+        )
+        print("  ✅ Кэш очищен")
+    except Exception:
+        print("  ⚠ Не удалось выполнить flutter clean (пропускаем)")
+
+
+def _kill_exe():
+    if os.name != "nt":
+        return
+    try:
+        result = subprocess.run(
+            ["taskkill", "/f", "/im", "construct_manager.exe"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode == 0:
+            print("  🔄 Предыдущий процесс construct_manager.exe завершён")
+    except Exception:
+        pass
+
+
+def _launch_app(platform: str, build_type: str):
+    build_mode = BUILD_TYPES[build_type]["flag"].lstrip("-").capitalize()
+    exe_name = f"construct_manager.exe"
+    exe_path = PROJECT_DIR / "build" / "windows" / "x64" / "runner" / build_mode / exe_name
+
+    if not exe_path.exists():
+        exe_path = PROJECT_DIR / "build" / "windows" / "x64" / build_mode / exe_name
+
+    if exe_path.exists():
+        print(f"  🚀 Запуск: {exe_path}")
+        subprocess.Popen([str(exe_path)], cwd=str(exe_path.parent))
 
 
 def main():
@@ -131,6 +206,10 @@ def main():
 
     if confirm_build(platform, build_type):
         run_build(platform, build_type)
+        if os.name == "nt":
+            ctypes.windll.user32.ShowWindow(
+                ctypes.windll.kernel32.GetConsoleWindow(), 3
+            )
     else:
         print("\n  Сборка отменена.")
         sys.exit(0)

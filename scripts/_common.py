@@ -95,7 +95,7 @@ def pnpm_command() -> list[str]:
 
 def ensure_project_layout() -> None:
     required_paths = [
-        project_root() / "dart" / "construct_manager" / "pubspec.yaml",
+        project_root() / "client" / "construct_manager" / "pubspec.yaml",
         project_root() / "database" / "001-schema.sql",
         project_root() / "dist" / "index.html",
         project_root() / ".github" / "workflows" / "pages.yml",

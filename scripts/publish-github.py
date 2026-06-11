@@ -152,13 +152,13 @@ def main() -> None:
     run_combine_sql(root)
 
     # 2. Bump version in pubspec.yaml
-    pubspec = root / "dart" / "construct_manager" / "pubspec.yaml"
+    pubspec = root / "client" / "construct_manager" / "pubspec.yaml"
     update_pubspec_version(pubspec, pubspec_version)
 
     # 3. Commit everything
     branch = args.branch or detect_current_branch()
     log(f"Committing on branch '{branch}'...", Colors.CYAN)
-    for folder in ["dart", "database", "dist", ".github", "README.md"]:
+    for folder in ["client", "database", "dist", ".github", "README.md"]:
         run_git(["add", folder], root)
     status = run_git(["status", "--porcelain"], root).stdout.strip()
 

@@ -14,7 +14,7 @@ AS $$
 BEGIN
     INSERT INTO public.users (uid, name, email, admin, is_email_verified, role)
     VALUES (
-        NEW.id,
+        NEW.id::text,
         COALESCE(NEW.raw_user_meta_data ->> 'name', split_part(NEW.email, '@', 1)),
         NEW.email,
         FALSE,

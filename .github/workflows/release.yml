@@ -88,6 +88,18 @@ jobs:
           flutter-version: "3.x"
           channel: "stable"
 
+      - name: Setup keystore
+        run: |
+          if [ -n "${{ secrets.KEYSTORE_PASSWORD }}" ]; then
+            echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+            echo "keyPassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
+            echo "keyAlias=construct-manager" >> android/key.properties
+            echo "storeFile=keystore.jks" >> android/key.properties
+            echo "Keystore configured from secrets"
+          else
+            echo "No keystore secrets — using debug fallback"
+          fi
+
       - name: Install dependencies
         run: flutter pub get
 
@@ -97,5 +109,5 @@ jobs:
       - name: Upload APK to release
         uses: softprops/action-gh-release@v2
         with:
-          files: dart/construct_manager/build/app/outputs/flutter-apk/app-release.apk
+          files: dart/construct_manager/build/app/outputs/flutter-apk/construction-manager.apk
           generate_release_notes: true

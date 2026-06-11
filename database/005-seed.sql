@@ -26,11 +26,11 @@ INSERT INTO public.budgets (uid, construction_uid, title, description, value) VA
 ON CONFLICT (uid) DO NOTHING;
 
 -- Add sample schedules
-INSERT INTO public.schedules (uid, construction_uid, title, deadline, state) VALUES
-    ('demo-sched-1', 'demo-constr-1', 'Демонтаж', '01/06/2026', 'SOLVED'),
-    ('demo-sched-2', 'demo-constr-1', 'Отделка', '01/08/2026', 'ON_SCHEDULE'),
-    ('demo-sched-3', 'demo-constr-2', 'Фундаментные работы', '15/04/2026', 'LATE'),
-    ('demo-sched-4', 'demo-constr-2', 'Возведение стен', '15/07/2026', 'ON_SCHEDULE')
+INSERT INTO public.schedules (uid, construction_uid, title, start_date, deadline, state) VALUES
+    ('demo-sched-1', 'demo-constr-1', 'Демонтаж', '15/05/2026', '01/06/2026', 'SOLVED'),
+    ('demo-sched-2', 'demo-constr-1', 'Отделка', '15/06/2026', '01/08/2026', 'ON_SCHEDULE'),
+    ('demo-sched-3', 'demo-constr-2', 'Фундаментные работы', '01/03/2026', '15/04/2026', 'LATE'),
+    ('demo-sched-4', 'demo-constr-2', 'Возведение стен', '01/05/2026', '15/07/2026', 'ON_SCHEDULE')
 ON CONFLICT (uid) DO NOTHING;
 
 -- Add sample delays
@@ -38,8 +38,4 @@ INSERT INTO public.delays (uid, construction_uid, schedule_uid, title, reason, i
     ('demo-delay-1', 'demo-constr-2', 'demo-sched-3', 'Задержка поставки бетона', 'Срыв поставки поставщиком', TRUE, TRUE, 14, 'Поставщик не уложился в сроки по договору')
 ON CONFLICT (uid) DO NOTHING;
 
--- Add sample responsibilities
-INSERT INTO public.responsabilities (uid, construction_uid, title, description, deadline, state, responsible_email) VALUES
-    ('demo-resp-1', 'demo-constr-1', 'Закупка материалов', 'Составить смету и закупить материалы', '15/06/2026', 'OPEN', 'petr@example.com'),
-    ('demo-resp-2', 'demo-constr-1', 'Контроль качества', 'Проверка качества отделочных работ', '01/08/2026', 'OPEN', 'anna@example.com')
-ON CONFLICT (uid) DO NOTHING;
+-- (responsibilities seed data removed)

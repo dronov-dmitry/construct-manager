@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS schedules (
     uid TEXT PRIMARY KEY,
     construction_uid TEXT NOT NULL REFERENCES constructions(uid) ON DELETE CASCADE,
     title TEXT NOT NULL DEFAULT '',
+    start_date TEXT,
     deadline TEXT NOT NULL DEFAULT '',
     state TEXT NOT NULL DEFAULT 'ON_SCHEDULE' CHECK (state IN ('ON_SCHEDULE', 'LATE', 'SOLVED')),
     finish_date TEXT,
@@ -71,6 +72,8 @@ CREATE TABLE IF NOT EXISTS schedules (
 );
 
 CREATE INDEX IF NOT EXISTS idx_schedules_construction ON schedules(construction_uid);
+
+ALTER TABLE schedules ADD COLUMN IF NOT EXISTS start_date TEXT;
 
 -- ******************** DELAYS ********************
 CREATE TABLE IF NOT EXISTS delays (
@@ -92,19 +95,7 @@ CREATE TABLE IF NOT EXISTS delays (
 CREATE INDEX IF NOT EXISTS idx_delays_construction ON delays(construction_uid);
 CREATE INDEX IF NOT EXISTS idx_delays_schedule ON delays(schedule_uid);
 
--- ******************** RESPONSIBILITIES ********************
-CREATE TABLE IF NOT EXISTS responsabilities (
-    uid TEXT PRIMARY KEY,
-    construction_uid TEXT NOT NULL REFERENCES constructions(uid) ON DELETE CASCADE,
-    title TEXT NOT NULL DEFAULT '',
-    description TEXT NOT NULL DEFAULT '',
-    deadline TEXT NOT NULL DEFAULT '',
-    state TEXT NOT NULL DEFAULT 'OPEN' CHECK (state IN ('OPEN', 'SOLVED')),
-    responsible_email TEXT NOT NULL DEFAULT '',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_resp_construction ON responsabilities(construction_uid);
+-- ******************** RESPONSIBILITIES (removed) ********************
 
 -- ******************** PHOTOS ********************
 CREATE TABLE IF NOT EXISTS photos (
@@ -134,47 +125,55 @@ CREATE INDEX IF NOT EXISTS idx_photos_uid ON photos(uid);
 -- ******************** USERS ********************
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Anyone can read users" ON users;
 CREATE POLICY "Anyone can read users"
     ON users FOR SELECT
     TO authenticated
     USING (true);
 
+DROP POLICY IF EXISTS "Users can insert own record" ON users;
 CREATE POLICY "Users can insert own record"
     ON users FOR INSERT
     TO authenticated
-    WITH CHECK (uid = auth.uid());
+    WITH CHECK (uid = auth.uid()::text);
 
+DROP POLICY IF EXISTS "Users can update own record" ON users;
 CREATE POLICY "Users can update own record"
     ON users FOR UPDATE
     TO authenticated
-    USING (uid = auth.uid());
+    USING (uid = auth.uid()::text);
 
 -- ******************** CONSTRUCTIONS ********************
 ALTER TABLE constructions ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read their constructions" ON constructions;
 CREATE POLICY "Users can read their constructions"
     ON constructions FOR SELECT
     TO authenticated
-    USING (owner_uid = auth.uid());
+    USING (owner_uid = auth.uid()::text);
 
+DROP POLICY IF EXISTS "Users can insert their constructions" ON constructions;
 CREATE POLICY "Users can insert their constructions"
     ON constructions FOR INSERT
     TO authenticated
-    WITH CHECK (owner_uid = auth.uid());
+    WITH CHECK (owner_uid = auth.uid()::text);
 
+DROP POLICY IF EXISTS "Users can update their constructions" ON constructions;
 CREATE POLICY "Users can update their constructions"
     ON constructions FOR UPDATE
     TO authenticated
-    USING (owner_uid = auth.uid());
+    USING (owner_uid = auth.uid()::text);
 
+DROP POLICY IF EXISTS "Users can delete their constructions" ON constructions;
 CREATE POLICY "Users can delete their constructions"
     ON constructions FOR DELETE
     TO authenticated
-    USING (owner_uid = auth.uid());
+    USING (owner_uid = auth.uid()::text);
 
 -- ******************** BUDGETS ********************
 ALTER TABLE budgets ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read budgets of their constructions" ON budgets;
 CREATE POLICY "Users can read budgets of their constructions"
     ON budgets FOR SELECT
     TO authenticated
@@ -182,10 +181,11 @@ CREATE POLICY "Users can read budgets of their constructions"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = budgets.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert budgets" ON budgets;
 CREATE POLICY "Users can insert budgets"
     ON budgets FOR INSERT
     TO authenticated
@@ -193,10 +193,11 @@ CREATE POLICY "Users can insert budgets"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = budgets.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can update budgets" ON budgets;
 CREATE POLICY "Users can update budgets"
     ON budgets FOR UPDATE
     TO authenticated
@@ -204,10 +205,11 @@ CREATE POLICY "Users can update budgets"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = budgets.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can delete budgets" ON budgets;
 CREATE POLICY "Users can delete budgets"
     ON budgets FOR DELETE
     TO authenticated
@@ -215,13 +217,14 @@ CREATE POLICY "Users can delete budgets"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = budgets.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
 -- ******************** SCHEDULES ********************
 ALTER TABLE schedules ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read schedules of their constructions" ON schedules;
 CREATE POLICY "Users can read schedules of their constructions"
     ON schedules FOR SELECT
     TO authenticated
@@ -229,10 +232,11 @@ CREATE POLICY "Users can read schedules of their constructions"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = schedules.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert schedules" ON schedules;
 CREATE POLICY "Users can insert schedules"
     ON schedules FOR INSERT
     TO authenticated
@@ -240,10 +244,11 @@ CREATE POLICY "Users can insert schedules"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = schedules.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can update schedules" ON schedules;
 CREATE POLICY "Users can update schedules"
     ON schedules FOR UPDATE
     TO authenticated
@@ -251,10 +256,11 @@ CREATE POLICY "Users can update schedules"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = schedules.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can delete schedules" ON schedules;
 CREATE POLICY "Users can delete schedules"
     ON schedules FOR DELETE
     TO authenticated
@@ -262,13 +268,14 @@ CREATE POLICY "Users can delete schedules"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = schedules.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
 -- ******************** DELAYS ********************
 ALTER TABLE delays ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read delays of their constructions" ON delays;
 CREATE POLICY "Users can read delays of their constructions"
     ON delays FOR SELECT
     TO authenticated
@@ -276,10 +283,11 @@ CREATE POLICY "Users can read delays of their constructions"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = delays.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert delays" ON delays;
 CREATE POLICY "Users can insert delays"
     ON delays FOR INSERT
     TO authenticated
@@ -287,10 +295,11 @@ CREATE POLICY "Users can insert delays"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = delays.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can update delays" ON delays;
 CREATE POLICY "Users can update delays"
     ON delays FOR UPDATE
     TO authenticated
@@ -298,10 +307,11 @@ CREATE POLICY "Users can update delays"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = delays.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can delete delays" ON delays;
 CREATE POLICY "Users can delete delays"
     ON delays FOR DELETE
     TO authenticated
@@ -309,13 +319,14 @@ CREATE POLICY "Users can delete delays"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = delays.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
 -- ******************** RESPONSIBILITIES ********************
 ALTER TABLE responsabilities ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read responsibilities of their constructions" ON responsabilities;
 CREATE POLICY "Users can read responsibilities of their constructions"
     ON responsabilities FOR SELECT
     TO authenticated
@@ -323,10 +334,11 @@ CREATE POLICY "Users can read responsibilities of their constructions"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = responsabilities.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert responsibilities" ON responsabilities;
 CREATE POLICY "Users can insert responsibilities"
     ON responsabilities FOR INSERT
     TO authenticated
@@ -334,10 +346,11 @@ CREATE POLICY "Users can insert responsibilities"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = responsabilities.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can update responsibilities" ON responsabilities;
 CREATE POLICY "Users can update responsibilities"
     ON responsabilities FOR UPDATE
     TO authenticated
@@ -345,10 +358,11 @@ CREATE POLICY "Users can update responsibilities"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = responsabilities.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can delete responsibilities" ON responsabilities;
 CREATE POLICY "Users can delete responsibilities"
     ON responsabilities FOR DELETE
     TO authenticated
@@ -356,13 +370,14 @@ CREATE POLICY "Users can delete responsibilities"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = responsabilities.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
 -- ******************** PHOTOS ********************
 ALTER TABLE photos ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can read photos of their constructions" ON photos;
 CREATE POLICY "Users can read photos of their constructions"
     ON photos FOR SELECT
     TO authenticated
@@ -370,10 +385,11 @@ CREATE POLICY "Users can read photos of their constructions"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = photos.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can insert photos" ON photos;
 CREATE POLICY "Users can insert photos"
     ON photos FOR INSERT
     TO authenticated
@@ -381,10 +397,11 @@ CREATE POLICY "Users can insert photos"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = photos.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can update photos" ON photos;
 CREATE POLICY "Users can update photos"
     ON photos FOR UPDATE
     TO authenticated
@@ -392,10 +409,11 @@ CREATE POLICY "Users can update photos"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = photos.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
+DROP POLICY IF EXISTS "Users can delete photos" ON photos;
 CREATE POLICY "Users can delete photos"
     ON photos FOR DELETE
     TO authenticated
@@ -403,7 +421,7 @@ CREATE POLICY "Users can delete photos"
         EXISTS (
             SELECT 1 FROM constructions
             WHERE constructions.uid = photos.construction_uid
-            AND constructions.owner_uid = auth.uid()
+            AND constructions.owner_uid = auth.uid()::text
         )
     );
 
@@ -419,13 +437,31 @@ CREATE POLICY "Users can delete photos"
 -- ============================================================
 
 -- Ensure the bucket exists (run CREATE or use Dashboard)
--- INSERT INTO storage.buckets (id, name, public)
--- VALUES ('construction-photos', 'construction-photos', true)
--- ON CONFLICT (id) DO NOTHING;
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('construction-photos', 'construction-photos', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- Function to create bucket from the app (called via anon key + RPC)
+CREATE OR REPLACE FUNCTION create_photo_bucket()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = ''
+AS $$
+BEGIN
+  INSERT INTO storage.buckets (id, name, public)
+  VALUES ('construction-photos', 'construction-photos', true)
+  ON CONFLICT (id) DO NOTHING;
+END;
+$$;
+
+-- Allow authenticated users to call this function
+GRANT EXECUTE ON FUNCTION create_photo_bucket() TO authenticated;
 
 -- ******************** STORAGE POLICIES ********************
 
 -- Allow authenticated users to upload photos
+DROP POLICY IF EXISTS "authenticated_upload_photos" ON storage.objects;
 CREATE POLICY "authenticated_upload_photos"
 ON storage.objects
 FOR INSERT
@@ -435,6 +471,7 @@ WITH CHECK (
 );
 
 -- Allow public access to view photos
+DROP POLICY IF EXISTS "public_view_photos" ON storage.objects;
 CREATE POLICY "public_view_photos"
 ON storage.objects
 FOR SELECT
@@ -442,6 +479,7 @@ TO public
 USING (bucket_id = 'construction-photos');
 
 -- Allow authenticated users to update photos
+DROP POLICY IF EXISTS "authenticated_update_photos" ON storage.objects;
 CREATE POLICY "authenticated_update_photos"
 ON storage.objects
 FOR UPDATE
@@ -449,6 +487,7 @@ TO authenticated
 USING (bucket_id = 'construction-photos');
 
 -- Allow authenticated users to delete their photos
+DROP POLICY IF EXISTS "authenticated_delete_photos" ON storage.objects;
 CREATE POLICY "authenticated_delete_photos"
 ON storage.objects
 FOR DELETE
@@ -483,7 +522,7 @@ AS $$
 BEGIN
     INSERT INTO public.users (uid, name, email, admin, is_email_verified, role)
     VALUES (
-        NEW.id,
+        NEW.id::text,
         COALESCE(NEW.raw_user_meta_data ->> 'name', split_part(NEW.email, '@', 1)),
         NEW.email,
         FALSE,
@@ -622,11 +661,11 @@ INSERT INTO public.budgets (uid, construction_uid, title, description, value) VA
 ON CONFLICT (uid) DO NOTHING;
 
 -- Add sample schedules
-INSERT INTO public.schedules (uid, construction_uid, title, deadline, state) VALUES
-    ('demo-sched-1', 'demo-constr-1', 'Демонтаж', '01/06/2026', 'SOLVED'),
-    ('demo-sched-2', 'demo-constr-1', 'Отделка', '01/08/2026', 'ON_SCHEDULE'),
-    ('demo-sched-3', 'demo-constr-2', 'Фундаментные работы', '15/04/2026', 'LATE'),
-    ('demo-sched-4', 'demo-constr-2', 'Возведение стен', '15/07/2026', 'ON_SCHEDULE')
+INSERT INTO public.schedules (uid, construction_uid, title, start_date, deadline, state) VALUES
+    ('demo-sched-1', 'demo-constr-1', 'Демонтаж', '15/05/2026', '01/06/2026', 'SOLVED'),
+    ('demo-sched-2', 'demo-constr-1', 'Отделка', '15/06/2026', '01/08/2026', 'ON_SCHEDULE'),
+    ('demo-sched-3', 'demo-constr-2', 'Фундаментные работы', '01/03/2026', '15/04/2026', 'LATE'),
+    ('demo-sched-4', 'demo-constr-2', 'Возведение стен', '01/05/2026', '15/07/2026', 'ON_SCHEDULE')
 ON CONFLICT (uid) DO NOTHING;
 
 -- Add sample delays
@@ -634,11 +673,7 @@ INSERT INTO public.delays (uid, construction_uid, schedule_uid, title, reason, i
     ('demo-delay-1', 'demo-constr-2', 'demo-sched-3', 'Задержка поставки бетона', 'Срыв поставки поставщиком', TRUE, TRUE, 14, 'Поставщик не уложился в сроки по договору')
 ON CONFLICT (uid) DO NOTHING;
 
--- Add sample responsibilities
-INSERT INTO public.responsabilities (uid, construction_uid, title, description, deadline, state, responsible_email) VALUES
-    ('demo-resp-1', 'demo-constr-1', 'Закупка материалов', 'Составить смету и закупить материалы', '15/06/2026', 'OPEN', 'petr@example.com'),
-    ('demo-resp-2', 'demo-constr-1', 'Контроль качества', 'Проверка качества отделочных работ', '01/08/2026', 'OPEN', 'anna@example.com')
-ON CONFLICT (uid) DO NOTHING;
+-- (responsibilities seed data removed)
 
 -- ============================================================
 -- Manual steps required:

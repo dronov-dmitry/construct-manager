@@ -59,7 +59,12 @@
             </li>
             <li>
               <h3 data-i18n="deploy.keys.title">Copy API credentials</h3>
-              <p data-i18n="deploy.keys.text">In Settings → API copy Project URL and anon public key. Paste them in the ConstructManager settings screen.</p>
+              <p data-i18n="deploy.keys.text">In your Supabase dashboard go to <strong>Project Settings → Data API</strong>. Copy <strong>Project URL</strong> and <strong>anon public key</strong>, then paste them in the ConstructManager settings screen.</p>
+              <ol style="margin-top:0.75rem;padding-left:1.25rem;display:flex;flex-direction:column;gap:0.5rem">
+                <li>Open <strong>Project Settings</strong> (gear icon in the bottom-left sidebar) → <strong>Data API</strong> tab.</li>
+                <li><strong>Project URL</strong> — the first field at the top of the page. It is <em>not</em> the browser URL; it looks like:<br><code style="font-size:0.85em">https://ejyesfvyhdguhgbuvrzv.supabase.co</code><br>Copy only <code>https://ejyesfvyhdguhgbuvrzv.supabase.co</code> — omit the <code>/rest/v1</code> suffix, the client adds it automatically.</li>
+                <li><strong>anon public key</strong> — in the <strong>Project API keys</strong> section, the row labelled <strong>anon public</strong>.<br><code style="font-size:0.85em">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6In...</code></li>
+              </ol>
             </li>
           </ol>
         </div>

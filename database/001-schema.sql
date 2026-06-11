@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS schedules (
     uid TEXT PRIMARY KEY,
     construction_uid TEXT NOT NULL REFERENCES constructions(uid) ON DELETE CASCADE,
     title TEXT NOT NULL DEFAULT '',
+    start_date TEXT,
     deadline TEXT NOT NULL DEFAULT '',
     state TEXT NOT NULL DEFAULT 'ON_SCHEDULE' CHECK (state IN ('ON_SCHEDULE', 'LATE', 'SOLVED')),
     finish_date TEXT,
@@ -59,6 +60,8 @@ CREATE TABLE IF NOT EXISTS schedules (
 );
 
 CREATE INDEX IF NOT EXISTS idx_schedules_construction ON schedules(construction_uid);
+
+ALTER TABLE schedules ADD COLUMN IF NOT EXISTS start_date TEXT;
 
 -- ******************** DELAYS ********************
 CREATE TABLE IF NOT EXISTS delays (
@@ -80,19 +83,7 @@ CREATE TABLE IF NOT EXISTS delays (
 CREATE INDEX IF NOT EXISTS idx_delays_construction ON delays(construction_uid);
 CREATE INDEX IF NOT EXISTS idx_delays_schedule ON delays(schedule_uid);
 
--- ******************** RESPONSIBILITIES ********************
-CREATE TABLE IF NOT EXISTS responsabilities (
-    uid TEXT PRIMARY KEY,
-    construction_uid TEXT NOT NULL REFERENCES constructions(uid) ON DELETE CASCADE,
-    title TEXT NOT NULL DEFAULT '',
-    description TEXT NOT NULL DEFAULT '',
-    deadline TEXT NOT NULL DEFAULT '',
-    state TEXT NOT NULL DEFAULT 'OPEN' CHECK (state IN ('OPEN', 'SOLVED')),
-    responsible_email TEXT NOT NULL DEFAULT '',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
-CREATE INDEX IF NOT EXISTS idx_resp_construction ON responsabilities(construction_uid);
+-- ******************** RESPONSIBILITIES (removed) ********************
 
 -- ******************** PHOTOS ********************
 CREATE TABLE IF NOT EXISTS photos (

@@ -1,0 +1,156 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:http/http.dart' as http;
+import 'package:open_filex/open_filex.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class UpdateInfo {
+  UpdateInfo({
+    required this.version,
+    required this.tagName,
+    required this.downloadUrl,
+    required this.assetName,
+    required this.releaseUrl,
+  });
+
+  final String version;
+  final String tagName;
+  final String? downloadUrl;
+  final String? assetName;
+  final String releaseUrl;
+
+  bool get canAutoUpdate => downloadUrl != null;
+}
+
+class AppUpdate {
+  AppUpdate({http.Client? client, this._currentVersion})
+      : _client = client ?? http.Client();
+
+  final http.Client _client;
+  final String? _currentVersion;
+
+  String? get currentVersion => _currentVersion;
+
+  static const _apiUrl =
+      'https://api.github.com/repos/dronov-dmitry/construct-manager/releases/latest';
+  static const _releasesUrl =
+      'https://github.com/dronov-dmitry/construct-manager/releases';
+
+  Future<UpdateInfo?> checkForUpdate() async {
+    try {
+      final response = await _client
+          .get(Uri.parse(_apiUrl), headers: {'Accept': 'application/vnd.github.v3+json'})
+          .timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) return null;
+
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
+      final tagName = data['tag_name'] as String? ?? '';
+      final version = tagName.startsWith('v') ? tagName.substring(1) : tagName;
+
+      if (version.isEmpty || !_isNewer(version)) return null;
+
+      final assets = data['assets'] as List<dynamic>? ?? [];
+      String? downloadUrl;
+      String? assetName;
+
+      final key = _platformAssetKey();
+      if (key != null) {
+        for (final a in assets) {
+          final name = a['name'] as String? ?? '';
+          if (name.contains(key)) {
+            downloadUrl = a['browser_download_url'] as String?;
+            assetName = name;
+            break;
+          }
+        }
+      }
+
+      return UpdateInfo(
+        version: version,
+        tagName: tagName,
+        downloadUrl: downloadUrl,
+        assetName: assetName,
+        releaseUrl: '$_releasesUrl/tag/$tagName',
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<String?> downloadAsset(UpdateInfo update) async {
+    final url = update.downloadUrl;
+    if (url == null) return null;
+
+    final dir = await _downloadDir();
+    final filePath = '${dir.path}/${update.assetName ?? 'update'}';
+    final file = File(filePath);
+
+    final response = await _client.get(Uri.parse(url));
+    await file.writeAsBytes(response.bodyBytes);
+
+    return filePath;
+  }
+
+  Future<Directory> _downloadDir() async {
+    if (Platform.isAndroid) {
+      return (await getExternalStorageDirectory()) ?? (await getApplicationDocumentsDirectory());
+    }
+    return getApplicationDocumentsDirectory();
+  }
+
+  Future<bool> installAsset(String filePath) async {
+    if (!File(filePath).existsSync()) return false;
+
+    final file = File(filePath);
+    final result = await OpenFilex.open(file.path);
+
+    if (result.type == ResultType.done) return true;
+
+    if (result.type == ResultType.noAppToOpen) {
+      final releaseUrl = _releasesUrl;
+      final uri = Uri.parse(releaseUrl);
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+
+    return false;
+  }
+
+  static String? _platformAssetKey() {
+    if (kIsWeb) return null;
+    if (Platform.isAndroid) return '.apk';
+    if (Platform.isIOS) return 'ios-unsigned.zip';
+    if (Platform.isWindows) return 'windows.zip';
+    if (Platform.isLinux) return 'linux.tar.gz';
+    if (Platform.isMacOS) return 'macos.tar.gz';
+    return null;
+  }
+
+  static Future<String> getCurrentVersion() async {
+    final info = await PackageInfo.fromPlatform();
+    return info.version;
+  }
+
+  bool _isNewer(String version) {
+    if (_currentVersion == null) return false;
+    if (version == _currentVersion) return false;
+    final current = _parse(_currentVersion);
+    final remote = _parse(version);
+    if (current == null || remote == null) return false;
+    for (int i = 0; i < 3; i++) {
+      if (remote[i] > current[i]) return true;
+      if (remote[i] < current[i]) return false;
+    }
+    return false;
+  }
+
+  List<int>? _parse(String v) {
+    final parts = v.split('.');
+    if (parts.length != 3) return null;
+    return [for (final p in parts) int.tryParse(p) ?? 0];
+  }
+}

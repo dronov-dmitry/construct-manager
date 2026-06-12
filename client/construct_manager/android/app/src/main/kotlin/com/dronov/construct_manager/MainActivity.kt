@@ -1,4 +1,4 @@
-package com.dronov.deutsche_verb
+package com.dronov.construct_manager
 
 import io.flutter.embedding.android.FlutterActivity
 

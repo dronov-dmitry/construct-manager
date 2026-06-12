@@ -41,19 +41,23 @@ android {
                 storePassword = keystoreProperties["storePassword"] as String
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
-            } else {
-                // Fallback to debug signing if key.properties is missing (e.g. CI without secrets)
-                storeFile = file(System.getProperty("user.home") + "/.android/debug.keystore")
-                storePassword = "android"
-                keyAlias = "androiddebugkey"
-                keyPassword = "android"
             }
+            // Если key.properties отсутствует — signingConfig не назначается,
+            // Gradle автоматически использует debug signing для debug-сборок.
+            // Для release-сборки без keystore сборка упадёт с понятной ошибкой.
         }
     }
 
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // Используем release signing только если keystore настроен.
+            // Если key.properties отсутствует на CI — сборка упадёт здесь
+            // с явной ошибкой, а не с "debug.keystore not found".
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 

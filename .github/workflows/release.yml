@@ -90,14 +90,15 @@ jobs:
 
       - name: Setup keystore
         run: |
-          if [ -n "${{ secrets.KEYSTORE_PASSWORD }}" ]; then
+          if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
+            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/keystore.jks
             echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
             echo "keyPassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
             echo "keyAlias=construct-manager" >> android/key.properties
             echo "storeFile=keystore.jks" >> android/key.properties
             echo "Keystore configured from secrets"
           else
-            echo "No keystore secrets — using debug fallback"
+            echo "No KEYSTORE_BASE64 secret — APK will be signed with debug key"
           fi
 
       - name: Install dependencies

@@ -70,7 +70,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: client/construct_manager/${{ matrix.artifact }}
-          generate_release_notes: true
 
   build-android:
     name: Build Android APK
@@ -107,8 +106,11 @@ jobs:
       - name: Build APK
         run: flutter build apk --release
 
+      - name: Rename APK
+        run: mv build/app/outputs/flutter-apk/app-release.apk build/app/outputs/flutter-apk/construct-manager.apk
+
       - name: Upload APK to release
         uses: softprops/action-gh-release@v2
         with:
-          files: client/construct_manager/build/app/outputs/flutter-apk/construction-manager.apk
+          files: client/construct_manager/build/app/outputs/flutter-apk/construct-manager.apk
           generate_release_notes: true

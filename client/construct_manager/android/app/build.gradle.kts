@@ -50,21 +50,10 @@ android {
 
     buildTypes {
         release {
-            // Используем release signing только если keystore настроен.
-            // Если key.properties отсутствует на CI — сборка упадёт здесь
-            // с явной ошибкой, а не с "debug.keystore not found".
             signingConfig = if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
             } else {
                 signingConfigs.getByName("debug")
-            }
-        }
-    }
-
-    applicationVariants.all {
-        outputs.all {
-            if (this.name.contains("release")) {
-                (this as com.android.build.gradle.internal.api.ApkVariantOutputImpl).outputFileName = "construction-manager.apk"
             }
         }
     }

@@ -24,14 +24,16 @@ class BiometricService {
 
   Future<bool> authenticate() async {
     try {
+      // local_auth 3.x: AuthenticationOptions убран, параметры передаются напрямую.
+      // stickyAuth → persistAcrossBackgrounding
+      // useErrorDialogs убран (обработка ошибок теперь через LocalAuthException)
       final result = await _auth.authenticate(
         localizedReason: 'Authenticate to access ConstructManager',
-        options: const AuthenticationOptions(
-          useErrorDialogs: true,
-          stickyAuth: true,
-        ),
+        persistAcrossBackgrounding: true,
       );
       return result;
+    } on LocalAuthException {
+      return false;
     } catch (_) {
       return false;
     }

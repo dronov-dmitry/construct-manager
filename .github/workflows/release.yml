@@ -90,14 +90,17 @@ jobs:
       - name: Setup keystore
         run: |
           if [ -n "${{ secrets.KEYSTORE_BASE64 }}" ]; then
-            echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/keystore.jks
+            python3 -c "
+import base64, sys, pathlib
+pathlib.Path('android/keystore.jks').write_bytes(base64.b64decode(sys.stdin.read()))
+" <<< "${{ secrets.KEYSTORE_BASE64 }}"
             echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
             echo "keyPassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
             echo "keyAlias=construct-manager" >> android/key.properties
             echo "storeFile=keystore.jks" >> android/key.properties
             echo "Keystore configured from secrets"
           else
-            echo "No KEYSTORE_BASE64 secret — APK will be signed with debug key"
+            echo "No KEYSTORE_BASE64 secret — APK will be released with debug key"
           fi
 
       - name: Install dependencies

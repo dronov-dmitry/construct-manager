@@ -527,4 +527,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get video_guide => 'Video-Anleitung';
+
+  @override
+  String get video_guide_url => 'https://youtu.be/O78Gtu5xOIY';
 }

@@ -192,5 +192,6 @@
   "about_description": "ConstructManager — приложение для управления строительными проектами. Разработано Дмитрием Дроновым.",
   "website": "Веб-сайт",
   "github_profile": "GitHub",
-  "video_guide": "Видео-инструкция"
+  "video_guide": "Видео-инструкция",
+  "video_guide_url": "https://youtu.be/oyeULknRJuU"
 }

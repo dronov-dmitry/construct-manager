@@ -52,7 +52,7 @@ class InfoAppScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
-              onPressed: () => _openUrl(context, 'https://youtu.be/MbzCh3P16tI'),
+              onPressed: () => _openUrl(context, s.video_guide_url),
               icon: const Icon(Icons.video_library),
               label: Text(s.video_guide),
             ),
@@ -64,8 +64,6 @@ class InfoAppScreen extends StatelessWidget {
 
   Future<void> _openUrl(BuildContext context, String url) async {
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
-    }
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 }

@@ -192,5 +192,6 @@
   "about_description": "ConstructManager — застосунок для керування будівельними проєктами. Розроблено Дмитром Дроновим.",
   "website": "Веб-сайт",
   "github_profile": "GitHub",
-  "video_guide": "Відео-інструкція"
+  "video_guide": "Відео-інструкція",
+  "video_guide_url": "https://youtu.be/oyeULknRJuU"
 }

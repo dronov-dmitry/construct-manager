@@ -524,4 +524,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get video_guide => 'Відео-інструкція';
+
+  @override
+  String get video_guide_url => 'https://youtu.be/oyeULknRJuU';
 }

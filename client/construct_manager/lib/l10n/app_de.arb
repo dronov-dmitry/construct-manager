@@ -192,5 +192,6 @@
   "about_description": "ConstructManager — eine App zur Verwaltung von Bauprojekten. Entwickelt von Dmitry Dronov.",
   "website": "Webseite",
   "github_profile": "GitHub",
-  "video_guide": "Video-Anleitung"
+  "video_guide": "Video-Anleitung",
+  "video_guide_url": "https://youtu.be/O78Gtu5xOIY"
 }

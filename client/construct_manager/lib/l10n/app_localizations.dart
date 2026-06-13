@@ -1133,6 +1133,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Video Guide'**
   String get video_guide;
+
+  /// No description provided for @video_guide_url.
+  ///
+  /// In en, this message translates to:
+  /// **'https://youtu.be/O78Gtu5xOIY'**
+  String get video_guide_url;
 }
 
 class _AppLocalizationsDelegate

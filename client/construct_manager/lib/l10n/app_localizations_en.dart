@@ -524,4 +524,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get video_guide => 'Video Guide';
+
+  @override
+  String get video_guide_url => 'https://youtu.be/O78Gtu5xOIY';
 }

@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/network/supabase_client.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/app_update.dart';
+import '../../services/github_update_service.dart';
 import '../shell/app_drawer.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -21,15 +21,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _checkForUpdates() async {
-    final version = await AppUpdate.getCurrentVersion();
-    final updater = AppUpdate(currentVersion: version);
+    final version = await GithubUpdateService.getCurrentVersion();
+    final updater = GithubUpdateService(currentVersion: version);
     final info = await updater.checkForUpdate();
     if (info == null || !mounted) return;
 
     _showUpdateDialog(updater, info);
   }
 
-  void _showUpdateDialog(AppUpdate updater, UpdateInfo info) {
+  void _showUpdateDialog(GithubUpdateService updater, UpdateInfo info) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _downloadAndInstall(AppUpdate updater, UpdateInfo info) async {
+  Future<void> _downloadAndInstall(GithubUpdateService updater, UpdateInfo info) async {
     showDialog(
       context: context,
       barrierDismissible: false,

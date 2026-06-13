@@ -8,7 +8,7 @@ import '../../core/locale_service.dart';
 import '../../core/network/supabase_client.dart';
 import '../../core/theme_service.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/app_update.dart';
+import '../../services/github_update_service.dart';
 import '../shell/app_drawer.dart';
 import '../../ui/error_screen.dart';
 
@@ -49,8 +49,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _checkForUpdatesManually() async {
     final s = AppLocalizations.of(context)!;
-    final version = await AppUpdate.getCurrentVersion();
-    final updater = AppUpdate(currentVersion: version);
+    final version = await GithubUpdateService.getCurrentVersion();
+    final updater = GithubUpdateService(currentVersion: version);
     final info = await updater.checkForUpdate();
 
     if (!mounted) return;
@@ -65,7 +65,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _showUpdateDialog(updater, info);
   }
 
-  void _showUpdateDialog(AppUpdate updater, UpdateInfo info) {
+  void _showUpdateDialog(GithubUpdateService updater, UpdateInfo info) {
     final s = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -105,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Future<void> _downloadAndInstall(AppUpdate updater, UpdateInfo info) async {
+  Future<void> _downloadAndInstall(GithubUpdateService updater, UpdateInfo info) async {
     final s = AppLocalizations.of(context)!;
     showDialog(
       context: context,

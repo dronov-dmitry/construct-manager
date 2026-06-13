@@ -26,8 +26,8 @@ class UpdateInfo {
   bool get canAutoUpdate => downloadUrl != null;
 }
 
-class AppUpdate {
-  AppUpdate({http.Client? client, this._currentVersion})
+class GithubUpdateService {
+  GithubUpdateService({http.Client? client, this._currentVersion})
       : _client = client ?? http.Client();
 
   final http.Client _client;
@@ -39,6 +39,9 @@ class AppUpdate {
       'https://api.github.com/repos/dronov-dmitry/construct-manager/releases/latest';
   static const _releasesUrl =
       'https://github.com/dronov-dmitry/construct-manager/releases';
+
+  UpdateInfo? _cachedUpdate;
+  UpdateInfo? get cachedUpdate => _cachedUpdate;
 
   Future<UpdateInfo?> checkForUpdate() async {
     try {
@@ -70,13 +73,15 @@ class AppUpdate {
         }
       }
 
-      return UpdateInfo(
+      final info = UpdateInfo(
         version: version,
         tagName: tagName,
         downloadUrl: downloadUrl,
         assetName: assetName,
         releaseUrl: '$_releasesUrl/tag/$tagName',
       );
+      _cachedUpdate = info;
+      return info;
     } catch (_) {
       return null;
     }
@@ -112,27 +117,36 @@ class AppUpdate {
     if (result.type == ResultType.done) return true;
 
     if (result.type == ResultType.noAppToOpen) {
-      final releaseUrl = _releasesUrl;
-      final uri = Uri.parse(releaseUrl);
+      final uri = Uri.parse(_releasesUrl);
       await launchUrl(uri, mode: LaunchMode.externalApplication);
     }
 
     return false;
   }
 
-  static String? _platformAssetKey() {
-    if (kIsWeb) return null;
-    if (Platform.isAndroid) return '.apk';
-    if (Platform.isIOS) return 'ios-unsigned.zip';
-    if (Platform.isWindows) return 'windows.zip';
-    if (Platform.isLinux) return 'linux.tar.gz';
-    if (Platform.isMacOS) return 'macos.tar.gz';
-    return null;
+  static Future<UpdateInfo?> prefetchUpdate() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      final service = GithubUpdateService(currentVersion: info.version);
+      return service.checkForUpdate();
+    } catch (_) {
+      return null;
+    }
   }
 
   static Future<String> getCurrentVersion() async {
     final info = await PackageInfo.fromPlatform();
     return info.version;
+  }
+
+  static String? _platformAssetKey() {
+    if (kIsWeb) return null;
+    if (Platform.isAndroid) return 'construct-manager.apk';
+    if (Platform.isIOS) return 'ios-unsigned.zip';
+    if (Platform.isWindows) return 'windows.zip';
+    if (Platform.isLinux) return 'linux.tar.gz';
+    if (Platform.isMacOS) return 'macos.tar.gz';
+    return null;
   }
 
   bool _isNewer(String version) {

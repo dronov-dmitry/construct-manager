@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/network/supabase_client.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/github_update_service.dart';
 
 class InfoAppScreen extends StatelessWidget {
   const InfoAppScreen({super.key});
@@ -38,7 +39,26 @@ class InfoAppScreen extends StatelessWidget {
               s.about_description,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 8),
+            FutureBuilder<String>(
+              future: GithubUpdateService.getCurrentVersion(),
+              builder: (context, snapshot) {
+                final version = snapshot.data;
+                if (version == null) return const SizedBox.shrink();
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Center(
+                    child: Text(
+                      '${s.current_version}: v$version',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
             FilledButton.icon(
               onPressed: () => _openUrl(context, 'https://dronov-dmitry.github.io/'),
               icon: const Icon(Icons.open_in_new),

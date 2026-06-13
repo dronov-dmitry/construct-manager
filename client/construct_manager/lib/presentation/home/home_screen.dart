@@ -13,20 +13,41 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _checkForUpdates();
   }
 
-  Future<void> _checkForUpdates() async {
-    final version = await GithubUpdateService.getCurrentVersion();
-    final updater = GithubUpdateService(currentVersion: version);
-    final info = await updater.checkForUpdate();
-    if (info == null || !mounted) return;
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
-    _showUpdateDialog(updater, info);
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkForUpdates();
+    }
+  }
+
+  Future<void> _checkForUpdates() async {
+    try {
+      final version = await GithubUpdateService.getCurrentVersion();
+      final updater = GithubUpdateService(currentVersion: version);
+      final info = await updater.checkForUpdate();
+      if (info == null || !mounted) return;
+
+      _showUpdateDialog(updater, info);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Не удалось проверить обновления')),
+      );
+    }
   }
 
   void _showUpdateDialog(GithubUpdateService updater, UpdateInfo info) {

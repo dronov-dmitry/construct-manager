@@ -154,7 +154,6 @@ class GithubUpdateService {
     if (version == _currentVersion) return false;
     final current = _parse(_currentVersion);
     final remote = _parse(version);
-    if (current == null || remote == null) return false;
     for (int i = 0; i < 3; i++) {
       if (remote[i] > current[i]) return true;
       if (remote[i] < current[i]) return false;
@@ -162,9 +161,12 @@ class GithubUpdateService {
     return false;
   }
 
-  List<int>? _parse(String v) {
-    final parts = v.split('.');
-    if (parts.length != 3) return null;
-    return [for (final p in parts) int.tryParse(p) ?? 0];
+  static List<int> _parse(String v) {
+    final clean = v.split('+').first.split('-').first;
+    final parts = clean.split('.');
+    return [
+      for (int i = 0; i < 3; i++)
+        i < parts.length ? int.tryParse(parts[i]) ?? 0 : 0,
+    ];
   }
 }

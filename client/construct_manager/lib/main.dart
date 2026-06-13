@@ -77,9 +77,8 @@ void main() async {
     initStack = st;
   }
 
-  SupabaseClientManager.instance.client.auth.onAuthStateChange.listen((data) {
-    // Session recovered from deep link (email confirmation, etc.)
-    // GoRouter redirect will handle navigation
+  SupabaseClientManager.instance.client.auth.onAuthStateChange.listen((_) {
+    appRouter.refresh();
   });
 
   ErrorWidget.builder = (FlutterErrorDetails details) {

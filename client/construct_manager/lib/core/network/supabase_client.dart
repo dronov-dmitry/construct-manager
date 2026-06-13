@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../constants/constants.dart';
@@ -17,7 +20,9 @@ class SupabaseClientManager {
 
   SupabaseClient get client => _client;
 
-  static const _authOptions = AuthClientOptions(
+  static const _authSessionKey = 'supabase_auth_session';
+
+  static final _authOptions = AuthClientOptions(
     authFlowType: AuthFlowType.implicit,
   );
 
@@ -34,12 +39,15 @@ class SupabaseClientManager {
       );
       _currentUrl = 'https://demo.supabase.co';
       _currentKey = 'demo-key-placeholder';
+      _setupAuthListener();
       return;
     }
 
     _client = SupabaseClient(url, key, authOptions: _authOptions);
     _currentUrl = url;
     _currentKey = key;
+    _setupAuthListener();
+    await _restoreSession();
   }
 
   Future<void> updateSettings(String url, String key) async {
@@ -52,6 +60,43 @@ class SupabaseClientManager {
     _client = SupabaseClient(url, key, authOptions: _authOptions);
     _currentUrl = url;
     _currentKey = key;
+    _setupAuthListener();
+    await _restoreSession();
+  }
+
+  void _setupAuthListener() {
+    client.auth.onAuthStateChange.listen((data) {
+      if (data.session != null) {
+        _saveSession(data.session!);
+      } else if (data.event == AuthChangeEvent.signedOut) {
+        _clearSession();
+      }
+    });
+  }
+
+  Future<void> _saveSession(Session session) async {
+    final storage = const FlutterSecureStorage();
+    await storage.write(
+      key: _authSessionKey,
+      value: jsonEncode(session.toJson()),
+    );
+  }
+
+  Future<void> _clearSession() async {
+    final storage = const FlutterSecureStorage();
+    await storage.delete(key: _authSessionKey);
+  }
+
+  Future<void> _restoreSession() async {
+    try {
+      final storage = const FlutterSecureStorage();
+      final data = await storage.read(key: _authSessionKey);
+      if (data != null) {
+        await client.auth.recoverSession(data);
+      }
+    } catch (_) {
+      // ignore restore errors — user will just need to log in again
+    }
   }
 
   GoTrueClient get auth => client.auth;

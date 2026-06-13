@@ -155,13 +155,11 @@ def main() -> None:
     pubspec = root / "client" / "construct_manager" / "pubspec.yaml"
     update_pubspec_version(pubspec, pubspec_version)
 
-    # 3. Commit everything (excluding scripts/ — it goes only to GitLab)
+    # 3. Commit everything (scripts/ excluded — goes only to GitLab)
     branch = args.branch or detect_current_branch()
     log(f"Committing on branch '{branch}'...", Colors.CYAN)
     for folder in ["client", "database", "dist", ".github", "README.md"]:
         run_git(["add", folder], root)
-    # Remove scripts/ from tracking so it disappears from GitHub
-    run_git(["rm", "--cached", "-r", "--ignore-unmatch", "scripts/"], root, check=False)
     status = run_git(["status", "--porcelain"], root).stdout.strip()
 
     if status:

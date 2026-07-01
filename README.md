@@ -8,6 +8,11 @@ https://dronov-dmitry.github.io/construct-manager/
 
 Windows/Mac/Android
 
+### Видео
+
+[App_#024. Construction manager (Russian)](https://youtu.be/oyeULknRJuU)
+[App_#024. Construction manager (Deutsch)](https://youtu.be/O78Gtu5xOIY)
+
 ### Возможности
 
 - **Управление объектами** — создание, редактирование, отслеживание этапов строительства
